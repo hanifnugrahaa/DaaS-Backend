@@ -13,18 +13,20 @@ from app.database import Base
 
 config = context.config
 
-# Setup database URL - PAKAI YANG SAMA DENGAN database.py
+# Setup database URL
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/daas")
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 fileConfig(config.config_file_name)
+
+# INI LINE YANG CRITICAL - harus ada!
 target_metadata = Base.metadata
 
 def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
-        target_metadata=target_metadata,
+        target_metadata=target_metadata,  # HARUS ADA INI
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -39,7 +41,8 @@ def run_migrations_online():
     )
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, 
+            target_metadata=target_metadata  # HARUS ADA INI
         )
         with context.begin_transaction():
             context.run_migrations()
